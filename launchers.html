@@ -1,0 +1,113 @@
+<html>
+<head>
+<title> 3d-Pong </title>
+
+</head>
+<body>
+
+<script src="three.min.js"></script>
+<script>
+
+    var camera, scene, renderer;
+    var geometry, material, mesh;
+    var launcher, launcher2;
+
+    function get_launcher(){ 
+    var launcher = {
+        position: new THREE.Vector3(0, 0, 0),
+        rotationAxis: new THREE.Vector3(Math.random() * 5, Math.random() * 5, Math.random() * 5).normalize(),
+        rotation: 1,
+        pCount: 0,
+        pMax: 800,
+        radio: Math.random() * 500 + 200,
+        outSpeed: new THREE.Vector3(1, 1, 0.5),
+        particles: new THREE.Geometry(),
+		    pMaterial: new THREE.ParticleBasicMaterial({
+			      color: 0xFFFFFF,
+			      size: 20,
+			      map: THREE.ImageUtils.loadTexture(
+				        "particle.png"
+			          ),
+			      blending: THREE.AdditiveBlending,
+			      transparent: true
+          }),
+          launchNew: function() {
+                var particle = this.particles.vertices[this.pCount];
+                var matrix = new THREE.Matrix4().makeRotationAxis(
+                                                this.rotationAxis,
+                                                this.rotation
+                                                );
+                this.outSpeed.applyMatrix4(matrix);
+                particle.velocity = new THREE.Vector3().copy(this.outSpeed);
+                this.pCount++;
+              
+            },
+          update: function() {
+            
+            if (this.pCount < this.pMax){
+                this.launchNew();
+            }
+            
+            var n = this.pCount;
+            while(n--) {
+              var particle = this.particles.vertices[n];
+              var size = particle.length()
+              if (size > this.radio){
+                particle.velocity.negate();
+              }
+              particle.add(particle.velocity);
+
+            };       
+            this.particleSystem.geometry.verticesNeedUpdate = true;   
+            this.particleSystem.rotation.y += 0.01;
+          },
+          init: function(){
+            //init al aparticles
+            var n = this.pMax;
+            while(n--){
+              var particle = new THREE.Vector3().copy(this.position);
+              this.particles.vertices.push(particle);
+            };
+
+            this.particleSystem = new THREE.ParticleSystem(this.particles, this.pMaterial),
+            this.particleSystem.sortParticles = true;
+          
+          }, 
+        };
+      return launcher;
+      };
+
+    init();
+    animate();
+    
+    function init() {
+
+        
+        camera = new THREE.PerspectiveCamera( 75, 8/6, 1, 10000 );
+        camera.position.z = 800;
+        camera.position.y = 300;
+
+        scene = new THREE.Scene();
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(800, 600);
+	      renderer.setClearColor(new THREE.Color(0, 1));
+        document.body.appendChild( renderer.domElement );
+        launcher = get_launcher();
+        launcher2 = get_launcher();
+        
+        launcher.init();
+        launcher2.init();
+        scene.add(launcher.particleSystem);
+        scene.add(launcher2.particleSystem);
+      }
+
+    function animate() {
+      // note: three.js includes requestAnimationFrame shim
+      requestAnimationFrame( animate );
+      launcher.update() 
+      launcher2.update() 
+      renderer.render( scene, camera );
+    }
+</script>
+</body>
+</html>
