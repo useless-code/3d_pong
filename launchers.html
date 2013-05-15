@@ -4,7 +4,7 @@
 
 </head>
 <body>
-
+  <h1> Gl-launchers </h1>
 <script src="three.min.js"></script>
 <script>
 
@@ -12,23 +12,21 @@
     var geometry, material, mesh;
     var launcher, launcher2;
 
-    function get_launcher(){ 
+    function get_launcher(image){ 
     var launcher = {
         position: new THREE.Vector3(0, 0, 0),
         rotationAxis: new THREE.Vector3(Math.random() * 5, Math.random() * 5, Math.random() * 5).normalize(),
         rotation: 1,
         pCount: 0,
-        pMax: 800,
-        radio: Math.random() * 500 + 200,
+        pMax: 2000,
+        radio: Math.random() * 500 + 300,
         rotSpeed: Math.random() * 0.02 - 0.01,
         outSpeed: new THREE.Vector3(1, 1, 0.5),
         particles: new THREE.Geometry(),
 		    pMaterial: new THREE.ParticleBasicMaterial({
 			      color: 0xFFFFFF,
 			      size: 20,
-			      map: THREE.ImageUtils.loadTexture(
-				        "particle.png"
-			          ),
+			      map: THREE.ImageUtils.loadTexture( image),
 			      blending: THREE.AdditiveBlending,
 			      transparent: true
           }),
@@ -56,7 +54,7 @@
               if (size > this.radio){
                 particle.velocity.negate();
               }
-              particle.add(particle.velocity);
+              particle.add(particle.velocity).multiplyScalar(0.9999);
 
             };       
             this.particleSystem.geometry.verticesNeedUpdate = true;   
@@ -93,8 +91,8 @@
         renderer.setSize(800, 600);
 	      renderer.setClearColor(new THREE.Color(0, 1));
         document.body.appendChild( renderer.domElement );
-        launcher = get_launcher();
-        launcher2 = get_launcher();
+        launcher = get_launcher('particle.png');
+        launcher2 = get_launcher('hoja.png');
         
         launcher.init();
         launcher2.init();
@@ -109,6 +107,8 @@
       launcher2.update() 
       renderer.render( scene, camera );
     }
-</script>
+  </script>
+  <br/>
+  Made with Three.js and brain
 </body>
 </html>
