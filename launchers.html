@@ -20,6 +20,7 @@
         pCount: 0,
         pMax: 800,
         radio: Math.random() * 500 + 200,
+        rotSpeed: Math.random() * 0.02 - 0.01,
         outSpeed: new THREE.Vector3(1, 1, 0.5),
         particles: new THREE.Geometry(),
 		    pMaterial: new THREE.ParticleBasicMaterial({
@@ -59,7 +60,7 @@
 
             };       
             this.particleSystem.geometry.verticesNeedUpdate = true;   
-            this.particleSystem.rotation.y += 0.01;
+            this.particleSystem.rotation.y += this.rotSpeed;
           },
           init: function(){
             //init al aparticles
